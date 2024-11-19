@@ -13,12 +13,21 @@ enum Commands {
         #[clap(default_value = "3")]
         number: usize,
     },
+    Option {
+        #[clap(short)]
+        string: String,
+        #[clap(short)]
+        number: usize,
+    },
 }
 
 fn main() {
     let args = Cli::parse();
     match args.command {
         Commands::Position { string, number } => {
+            println!("{}", string.repeat(number));
+        }
+        Commands::Option { string, number } => {
             println!("{}", string.repeat(number));
         }
     }
