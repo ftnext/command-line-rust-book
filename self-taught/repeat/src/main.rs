@@ -16,7 +16,7 @@ enum Commands {
     Option {
         #[clap(short)]
         string: String,
-        #[clap(short)]
+        #[clap(short, default_value = "3")]
         number: usize,
     },
 }
