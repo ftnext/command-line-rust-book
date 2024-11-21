@@ -10,13 +10,13 @@ struct Cli {
 enum Commands {
     Position {
         string: String,
-        #[clap(default_value = "3")]
+        #[arg(default_value = "3")]
         number: usize,
     },
     Option {
-        #[clap(short)]
+        #[arg(short, long)]
         string: String,
-        #[clap(short, default_value = "3")]
+        #[arg(short, long, default_value = "3")]
         number: usize,
     },
 }
