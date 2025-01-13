@@ -8,6 +8,9 @@ edition = "2021"
 name = "repeatpy"
 crate-type = ["cdylib"]
 
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+
 [dependencies.pyo3]
 version = "0.23.4"
 features = ["abi3-py39"]

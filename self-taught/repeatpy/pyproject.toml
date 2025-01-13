@@ -11,5 +11,9 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]
+
+[project.scripts]
+repeatpy-cli = "repeatpy:repeat_cli"
+
 [tool.maturin]
 features = ["pyo3/extension-module"]
