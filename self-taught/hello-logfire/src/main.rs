@@ -7,7 +7,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let _guard = logfire.shutdown_guard();
 
-    logfire::info!("Hello, world!");
+    logfire::span!("doing some interesting work").in_scope(|| {
+        let x = 42i64;
+        let y = "spam";
+        logfire::info!("Hello, world! x = {x}, y = {y}", x, y);
+        panic!("Oh no!");
+    });
 
     Ok(())
 }
