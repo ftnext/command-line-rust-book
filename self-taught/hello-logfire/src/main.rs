@@ -1,18 +1,15 @@
-use logfire::config::ConsoleOptions;
+use tracing::{Level, event, instrument};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let logfire = logfire::configure()
-        .with_console(Some(ConsoleOptions::default()))
-        .finish()?;
+#[instrument]
+fn my_function(my_arg: usize) {
+    event!(Level::INFO, "doing some interesting work");
+    let x = 42i64;
+    let y = "spam";
+    event!(Level::INFO, "Hello, world! x = {}, y = {}", x, y);
+}
 
-    let _guard = logfire.shutdown_guard();
+fn main() {
+    tracing_subscriber::fmt().init();
 
-    logfire::span!("doing some interesting work").in_scope(|| {
-        let x = 42i64;
-        let y = "spam";
-        logfire::info!("Hello, world! x = {x}, y = {y}", x, y);
-        panic!("Oh no!");
-    });
-
-    Ok(())
+    my_function(1);
 }
