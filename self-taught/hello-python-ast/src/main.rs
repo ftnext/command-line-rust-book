@@ -18,7 +18,6 @@ def greet(person):
     return person.name + " " + person.age
 "#;
     let ast = ast::Suite::parse(python_source, "<embedded>").unwrap();
-    println!("{:#?}", ast);
 
     let mut counter = AttributeCounter {
         attributes_count: 0,
