@@ -1,4 +1,4 @@
-use rustpython_ast::{Arguments, ExprAttribute, Ranged, Visitor};
+use rustpython_ast::{Arg, Arguments, Expr, ExprAttribute, Ranged, Visitor};
 use rustpython_parser::{Parse, ast};
 
 struct AttributeCounter {
@@ -28,28 +28,33 @@ fn byte_offset_to_line_col(source: &str, offset: usize) -> (usize, usize) {
 
 impl Visitor for KotohaVisitor<'_> {
     fn visit_arguments(&mut self, node: Arguments) {
-        for arg in &node.args {
-            if let Some(annotation) = &arg.def.annotation {
-                if let rustpython_ast::Expr::Subscript(subscript) = annotation.as_ref() {
-                    if let rustpython_ast::Expr::Name(name) = subscript.value.as_ref() {
-                        if name.id.as_str() == "list" {
-                            let range = annotation.range();
-                            let annotation_text =
-                                &self.source[usize::from(range.start())..usize::from(range.end())];
-                            let (line, col) = byte_offset_to_line_col(
-                                self.source,
-                                usize::from(arg.def.range().start()),
-                            );
-                            println!(
-                                "Fix type hint `{}: {}` at {}:{}",
-                                arg.def.arg, annotation_text, line, col
-                            );
-                        }
+        for arg in node.args {
+            self.visit_arg(arg.def);
+            if let Some(default) = arg.default {
+                self.visit_expr(*default);
+            }
+        }
+    }
+
+    fn visit_arg(&mut self, node: Arg) {
+        if let Some(annotation) = &node.annotation {
+            if let Expr::Subscript(subscript) = annotation.as_ref() {
+                if let Expr::Name(name) = subscript.value.as_ref() {
+                    if name.id.as_str() == "list" {
+                        let range = annotation.range();
+                        let annotation_text =
+                            &self.source[usize::from(range.start())..usize::from(range.end())];
+                        let (line, col) =
+                            byte_offset_to_line_col(self.source, usize::from(node.range().start()));
+                        println!(
+                            "Fix type hint `{}: {}` at {}:{}",
+                            node.arg, annotation_text, line, col
+                        );
                     }
                 }
             }
         }
-        self.generic_visit_arguments(node);
+        self.generic_visit_arg(node);
     }
 }
 
