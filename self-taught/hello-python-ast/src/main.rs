@@ -28,11 +28,29 @@ fn byte_offset_to_line_col(source: &str, offset: usize) -> (usize, usize) {
 
 impl Visitor for KotohaVisitor<'_> {
     fn visit_arguments(&mut self, node: Arguments) {
+        for arg in node.posonlyargs {
+            self.visit_arg(arg.def);
+            if let Some(default) = arg.default {
+                self.visit_expr(*default);
+            }
+        }
         for arg in node.args {
             self.visit_arg(arg.def);
             if let Some(default) = arg.default {
                 self.visit_expr(*default);
             }
+        }
+        if let Some(vararg) = node.vararg {
+            self.visit_arg(*vararg);
+        }
+        for arg in node.kwonlyargs {
+            self.visit_arg(arg.def);
+            if let Some(default) = arg.default {
+                self.visit_expr(*default);
+            }
+        }
+        if let Some(kwarg) = node.kwarg {
+            self.visit_arg(*kwarg);
         }
     }
 
