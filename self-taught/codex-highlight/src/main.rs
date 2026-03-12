@@ -1,12 +1,20 @@
+use clap::Parser;
 use two_face::re_exports::syntect;
 
 #[derive(Debug)]
 struct CustomError(String);
 
+#[derive(Parser)]
+struct Cli {
+    /// The path to the Python file to read
+    path: std::path::PathBuf,
+}
+
 fn main() -> Result<(), CustomError> {
-    let path = "example.py";
+    let args = Cli::parse();
+    let path = &args.path;
     let content = std::fs::read_to_string(path)
-        .map_err(|err| CustomError(format!("Error reading `{}`: {}", path, err)))?;
+        .map_err(|err| CustomError(format!("Error reading `{}`: {}", path.display(), err)))?;
 
     let syn_set = two_face::syntax::extra_newlines();
     let theme_set = two_face::theme::extra();
