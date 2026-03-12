@@ -11,7 +11,16 @@ fn main() {
 
     let syn_ref = syn_set.find_syntax_by_extension("toml").unwrap();
     let theme = &theme_set[two_face::theme::EmbeddedThemeName::Nord];
-    let htmlified =
-        syntect::html::highlighted_html_for_string(TOML_TEXT, &syn_set, syn_ref, theme).unwrap();
-    println!("{}", htmlified);
+    let mut highlighter = syntect::easy::HighlightLines::new(syn_ref, theme);
+    let lines = TOML_TEXT.lines();
+    let mut output = String::new();
+
+    for line in lines {
+        let ranges = highlighter.highlight_line(line, &syn_set).unwrap();
+        let escaped = syntect::util::as_24_bit_terminal_escaped(&ranges[..], false);
+        output.push_str(&escaped);
+        output.push('\n');
+    }
+
+    println!("{}", output);
 }
