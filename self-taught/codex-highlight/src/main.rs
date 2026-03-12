@@ -4,6 +4,14 @@ use two_face::re_exports::syntect;
 #[derive(Debug)]
 struct CustomError(String);
 
+impl std::error::Error for CustomError {}
+
+impl std::fmt::Display for CustomError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 #[derive(Parser)]
 struct Cli {
     /// The path to the Python file to read
@@ -32,6 +40,6 @@ fn main() -> Result<(), CustomError> {
         output.push('\n');
     }
 
-    println!("{}", output);
+    print!("{}", output);
     Ok(())
 }
