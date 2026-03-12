@@ -1,21 +1,20 @@
 use two_face::re_exports::syntect;
 
-const PYTHON_SOURCE: &str = r#"
-def plus_one_ng(numbers: list[int]) -> list[int]:
-    return [n + 1 for n in numbers]
+#[derive(Debug)]
+struct CustomError(String);
 
-def plus_one_ok(numbers: Iterable[int]) -> list[int]:
-    return [n + 1 for n in numbers]
-"#;
+fn main() -> Result<(), CustomError> {
+    let path = "example.py";
+    let content = std::fs::read_to_string(path)
+        .map_err(|err| CustomError(format!("Error reading `{}`: {}", path, err)))?;
 
-fn main() {
     let syn_set = two_face::syntax::extra_newlines();
     let theme_set = two_face::theme::extra();
 
     let syn_ref = syn_set.find_syntax_by_extension("py").unwrap();
     let theme = &theme_set[two_face::theme::EmbeddedThemeName::Nord];
     let mut highlighter = syntect::easy::HighlightLines::new(syn_ref, theme);
-    let lines = PYTHON_SOURCE.lines();
+    let lines = content.lines();
     let mut output = String::new();
 
     for line in lines {
@@ -26,4 +25,5 @@ fn main() {
     }
 
     println!("{}", output);
+    Ok(())
 }
